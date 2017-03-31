@@ -1,24 +1,24 @@
+document.getElementById("canvas").style.background = 'rgb(0, 0, 255)';
+var ctx = $("#canvas")[0].getContext("2d"); //unsure but necessary for drawing
 const CANVAS_HEIGHT_MIN = 0; //location of the origin
 const CANVAS_WIDTH_MIN = 0; //location of the origin
+const CANVAS_HEIGHT = $("canvas").height(); //height of the game canvas
+const CANVAS_WIDTH = $("canvas").width(); //width of game canvas
+var upPressed = false; //up key is not being pressed
+var downPressed = false; //down key is not being pressed
+var refreshInterval = 0;
 
-var xBall = 150; //starting position of the ball in regards to the x axis
-var yBall = 150; //starting position of the ball in regards to the y axis
-var dxBall = 3; //change in location of the ball in regards to the x axis per refresh
-var dyBall = 5; //change in location of the ball in regards to the y axis per refresh
-const ballSize = 10
+var xBall = CANVAS_WIDTH/2; //starting position of the ball in regards to the x axis
+var yBall = CANVAS_HEIGHT/2; //starting position of the ball in regards to the y axis
+var dxBall = CANVAS_WIDTH/100; //change in location of the ball in regards to the x axis per refresh
+var dyBall = CANVAS_HEIGHT/60; //change in location of the ball in regards to the y axis per refresh
+const BALL_SIZE = 10; //size of the ball
 
 const PADDLE_HEIGHT = 70; //height of the drawn paddle
 const PADDLE_WIDTH = 10; //width of drawn paddle
+const PADDLE_MOVE_INCREMENT = 5; //how much the paddle moves on each refresh
 var xPaddle = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
 var yPaddle = 150 - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
-
-document.getElementById("canvas").style.background = 'rgb(0, 0, 255)';
-var ctx = $("#canvas")[0].getContext("2d"); //unsure but necessary for drawing
-const CANVAS_HEIGHT = $("canvas").height(); //height of the game canvas
-const CANVAS_WIDTH = $("canvas").width(); //width of game canvas
-var upDown = false;
-var downDown = false;
-var refreshInterval = 0;
 
 /*Precondition: Page has not been loaded.
 **Postcondition: XML object has been created, canvas has been drawn.*/
@@ -34,14 +34,14 @@ function initializePage()
 function drawGame()
 {
 	clearPaddle();
-	drawBall(xBall, yBall, 10); //sets the ball in motion
-    if(upDown) 
+	drawBall(xBall, yBall, BALL_SIZE); //sets the ball in motion
+    if(upPressed) 
 	{
-        yPaddle -= 5;
+        yPaddle -= PADDLE_MOVE_INCREMENT; //move the paddle up
     } 
-	else if(downDown) 
+	else if(downPressed) 
 	{
-        yPaddle += 5;
+        yPaddle += PADDLE_MOVE_INCREMENT; //move the paddle down
     }
     drawPaddle(xPaddle, yPaddle, PADDLE_WIDTH, PADDLE_HEIGHT);
     if (yBall + dyBall > CANVAS_HEIGHT || yBall + dyBall < CANVAS_HEIGHT_MIN) 
@@ -81,7 +81,7 @@ function drawPaddle(x, y, w, h)
 **Postcondition: The current paddle has been cleared.*/
 function clearPaddle()
 {
-	ctx.clearRect(CANVAS_WIDTH_MIN, CANVAS_HEIGHT_MIN, 300, 300);
+	ctx.clearRect(CANVAS_WIDTH_MIN, CANVAS_HEIGHT_MIN, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 function drawBall (x, y, r)
@@ -94,28 +94,28 @@ function drawBall (x, y, r)
 
 $(document).keydown(function(e) { //gives the value of the key when you press down
     if(e.keyCode == 40) {
-        downDown = true;
+        downPressed = true;
     } else if(e.keyCode == 38) {
-        upDown = true;
+        upPressed = true;
     }
     else if(e.keycode != 40) {
-    	downDown = false;
+    	downPressed = false;
     }
     else if(e.keycode != 38) {
-    	upDown = false;
+    	upPressed = false;
     }
 });
 $(document).keyup(function(e) { //tells the program that you have stopped pressing the key
     if(e.keyCode == 40) {
-        downDown = false;
+        downPressed = false;
     } else if(e.keyCode == 38) {
-        upDown = false;
+        upPressed = false;
     }
     else if(e.keycode != 40) {
-    	downDown = false;
+    	downPressed = false;
     }
     else if(e.keycode != 38) {
-    	upDown = false;
+    	upPressed = false;
     }
 });
 
