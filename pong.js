@@ -1,5 +1,6 @@
-document.getElementById("canvas").style.background = 'rgb(0, 0, 255)';
+document.getElementById("canvas").style.background = 'rgb(0, 0, 0)';
 var ctx = $("#canvas")[0].getContext("2d"); //unsure but necessary for drawing
+ctx.fillStyle = 'rgb(255, 255, 255)';
 const CANVAS_HEIGHT_MIN = 0; //location of the origin
 const CANVAS_WIDTH_MIN = 0; //location of the origin
 const CANVAS_HEIGHT = $("canvas").height(); //height of the game canvas
@@ -12,28 +13,36 @@ var xBall = CANVAS_WIDTH/2; //starting position of the ball in regards to the x 
 var yBall = CANVAS_HEIGHT/2; //starting position of the ball in regards to the y axis
 var dxBall = CANVAS_WIDTH/100; //change in location of the ball in regards to the x axis per refresh
 var dyBall = CANVAS_HEIGHT/60; //change in location of the ball in regards to the y axis per refresh
-const BALL_SIZE = 10; //size of the ball
+const BALL_SIZE = CANVAS_HEIGHT/100; //size of the ball
 
-const PADDLE_HEIGHT = 70; //height of the drawn paddle
-const PADDLE_WIDTH = 10; //width of drawn paddle
-const PADDLE_MOVE_INCREMENT = 5; //how much the paddle moves on each refresh
+const PADDLE_HEIGHT = CANVAS_HEIGHT/6; //height of the drawn paddle
+const PADDLE_WIDTH = CANVAS_WIDTH/50; //width of drawn paddle
+const PADDLE_MOVE_INCREMENT = CANVAS_HEIGHT/60; //how much the paddle moves on each refresh
 var xPaddle = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
-var yPaddle = 150 - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
+var yPaddle = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
 
 /*Precondition: Page has not been loaded.
-**Postcondition: XML object has been created, canvas has been drawn.*/
+**Postcondition: XML object has been created, canvas has been drawn, game has started*/
 function initializePage()
 {
-	//XMLHttp = new XMLHttpRequest();
+	XMLHttp = new XMLHttpRequest();
 	refreshInterval = setInterval(function(){drawGame()}, 20);
 	return refreshInterval;
+}
+
+/*Precondition: Set Username button has been clicked
+**Postcondition: Username is set and added to the userInfo div*/
+function getUsername()
+{
+	username = document.getElementById('username').value;
+	document.getElementById('userInfo').innerHTML = username;
 }
 
 /*Precondition: Game has been started.
 **Postcondition: The game canvas has been updated.*/
 function drawGame()
 {
-	clearPaddle();
+	clearPaddle(); //clears the current paddle
 	drawBall(xBall, yBall, BALL_SIZE); //sets the ball in motion
     if(upPressed) 
 	{
@@ -44,21 +53,21 @@ function drawGame()
         yPaddle += PADDLE_MOVE_INCREMENT; //move the paddle down
     }
     drawPaddle(xPaddle, yPaddle, PADDLE_WIDTH, PADDLE_HEIGHT);
-    if (yBall + dyBall > CANVAS_HEIGHT || yBall + dyBall < CANVAS_HEIGHT_MIN) 
+    if (yBall + dyBall > CANVAS_HEIGHT || yBall + dyBall < CANVAS_HEIGHT_MIN) //if ball hits top or bottom of canvas
 	{
 		dyBall = -dyBall;
     }
-    if (xBall + dxBall > CANVAS_WIDTH)
+    if (xBall + dxBall > CANVAS_WIDTH) //if ball hits right side of the canvas
 	{
 		dxBall = -dxBall;
 	}
-    else if (xBall + dxBall < CANVAS_WIDTH_MIN + PADDLE_WIDTH)
+    else if (xBall + dxBall < CANVAS_WIDTH_MIN + PADDLE_WIDTH) //if ball hits left side of the canvas
 	{
-		if (yBall > yPaddle && yBall < yPaddle + PADDLE_HEIGHT)
+		if (yBall > yPaddle && yBall < yPaddle + PADDLE_HEIGHT) //if the ball hits the paddle
 		{
 			dxBall = -dxBall;
         } 
-		else
+		else //if the ball does not hit the paddle
 		{
 			clearInterval(refreshInterval);
         }
@@ -105,6 +114,7 @@ $(document).keydown(function(e) { //gives the value of the key when you press do
     	upPressed = false;
     }
 });
+
 $(document).keyup(function(e) { //tells the program that you have stopped pressing the key
     if(e.keyCode == 40) {
         downPressed = false;
@@ -119,4 +129,9 @@ $(document).keyup(function(e) { //tells the program that you have stopped pressi
     }
 });
 
-initializePage();
+window.addEventListener("keydown", function(e) {
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);

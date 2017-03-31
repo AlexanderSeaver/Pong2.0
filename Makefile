@@ -36,6 +36,7 @@ PutCGI: pongAjax
 
 PutHTML:
 	cp pongWebpage.html /var/www/html/class/softdev/$(USER)/project4
+	cp pongWebpage.css /var/www/html/class/softdev/$(USER)/project4
 	cp pong.js  /var/www/html/class/softdev/$(USER)/project4
 	
 	echo "Current contents of your HTML directory: "

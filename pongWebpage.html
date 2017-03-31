@@ -1,12 +1,18 @@
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="pongWebpage.css">
 		<script src="jquery-3.1.1.min.js"></script>
 	</head>
 	<body>
 		<h1>Pong 2.0</h1>
-		<p>Project by Alex Seaver and Coire Gavin-Hanner</p>
-		<div id = "username"></div>
-		<canvas id="canvas" width="300" height="300"></canvas>
+		<h3>Project by Alex Seaver and Coire Gavin-Hanner</h3>
+		<hr>
+		<div class ="sidebar" id = "sidebar"><img src="PongSidebar.png"/></div>
+		<p>Enter Your Username: <input name="username" type="text" id=username maxlength=30></td>
+		<p><input type="button" onclick="javascript: getUsername()" name="submit" value="Set Username"/></p>
+		<div class = "section" id = "userInfo"></div>
+		<canvas id="canvas" width="600" height="600"></canvas>
 		<script type = "text/javascript" src="pong.js"></script>
+		<p><input type="button" onclick="javascript: initializePage()" name="submit" value="Start Game"/></p>
 	</body>
 </html>
