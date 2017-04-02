@@ -39,17 +39,19 @@ int main()
 	Fifo paddleFifo_ServerToAjax(paddlePipe_ServerToAjax);
 	
 	//routines
-	While (gameState == GAME_STATE_PRE)
+	while (gameState == GAME_STATE_PRE)
 	{
+		cout << "top of set usernumber" << endl;
 		uNumFifo_AjaxToServer.openread();
 		string userNo = uNumFifo_AjaxToServer.recv();
-		uNumFifo_AjaxToServer.close();
+		cout << userNo << endl;
+		uNumFifo_AjaxToServer.fifoclose();
 		while (numberOfUsers < 2)
 		{
 			numberOfUsers++;
 			uNumFifo_ServerToAjax.openwrite();
-			uNumFifo_ServerToAjax.send(numberOfUsers);
-			uNumFifo_ServerToAjax.close();
+			uNumFifo_ServerToAjax.send(to_string(numberOfUsers));
+			uNumFifo_ServerToAjax.fifoclose();
 		}		
 		gameState = GAME_STATE_INPLAY;
 	}
