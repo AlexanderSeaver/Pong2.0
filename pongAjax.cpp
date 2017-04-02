@@ -24,8 +24,8 @@ using namespace cgicc; // Needed for AJAX functions.
 
 int main()
 {
-	const GAME_STATE_PRE = "-1"; //while setting usernumbers
-	const GAME_STATE_INPLAY = "1"; //while playing the game
+	const string GAME_STATE_PRE = "-1"; //while setting usernumbers
+	const string GAME_STATE_INPLAY = "1"; //while playing the game
 	
 	//pipe information
 	string uNumPipe_ServerToAjax = "uNum_server_to_ajax"; //use this to identify different users

@@ -21,8 +21,8 @@ using namespace std;
 int main()
 {
 	//game state information
-	const GAME_STATE_PRE = "-1"; //while setting usernumbers
-	const GAME_STATE_INPLAY = "1"; //while playing the game
+	const string GAME_STATE_PRE = "-1"; //while setting usernumbers
+	const string GAME_STATE_INPLAY = "1"; //while playing the game
 	string gameState = GAME_STATE_PRE;
 	int numberOfUsers = 0;
 	
