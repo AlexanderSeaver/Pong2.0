@@ -34,6 +34,14 @@ canvas
 	border: 3px solid white;
 }
 
+.section
+{
+	position: relative;
+	top: -600px;
+	left: 300px;
+	color: white;
+}
+
 .sidebar
 {
 	position: relative;

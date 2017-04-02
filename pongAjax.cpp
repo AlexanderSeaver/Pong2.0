@@ -52,7 +52,7 @@ int main()
 	
 	if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
 	{
-		Fifo uNumFifo_ServerToAjax(uNumPipe_ServerToAjax);
+		/*Fifo uNumFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		Fifo uNumFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		
 		uNumFifo_AjaxToServer.openwrite();
@@ -62,7 +62,8 @@ int main()
 		uNumFifo_ServerToAjax.openread();
 		userno = uNumFifo_ServerToAjax.recv();
 		uNumFifo_ServerToAjax.fifoclose();
-		cout << userno;	
+		cout << userno;	*/
+		cout << "5";
 	}
 	else if(gameState == GAME_STATE_INPLAY)
 	{

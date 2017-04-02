@@ -43,7 +43,9 @@ int main()
 	{
 		cout << "top of set usernumber" << endl;
 		uNumFifo_AjaxToServer.openread();
+		cout << "after openread./n";
 		string userNo = uNumFifo_AjaxToServer.recv();
+		cout << "after userNo set\n";
 		cout << userNo << endl;
 		uNumFifo_AjaxToServer.fifoclose();
 		while (numberOfUsers < 2)

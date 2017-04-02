@@ -1,5 +1,5 @@
 # Put your user name below:
-USER= gavinhannerc
+USER= seavera
 CC= g++ -std=c++11
 
 #For Optimization
@@ -35,11 +35,13 @@ PutCGI: pongAjax
 	ls -l /usr/lib/cgi-bin/
 
 PutHTML:
+	cp pongWebpage.css /var/www/html/class/softdev/$(USER)/project4
 	cp pongWebpage.html /var/www/html/class/softdev/$(USER)/project4
 	cp pong.js  /var/www/html/class/softdev/$(USER)/project4
-	
+
 	echo "Current contents of your HTML directory: "
 	ls -l /var/www/html/class/softdev/$(USER)/project4
 
 clean:
 	rm -f *.o pongServer pongAjax
+

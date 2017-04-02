@@ -43,7 +43,7 @@ function getUsername()
 	username = document.getElementById('username').value;
 	document.getElementById('userInfo').innerHTML = username;
 	
-	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
+	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
