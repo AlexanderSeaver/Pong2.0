@@ -43,19 +43,25 @@ int main()
 	{
 		cout << "top of set usernumber" << endl;
 		uNumFifo_AjaxToServer.openread();
-		cout << "after openread./n";
+		cout << "after openread." << endl;
 		string userNo = uNumFifo_AjaxToServer.recv();
-		cout << "after userNo set\n";
+		cout << "after userNo set" << endl;
 		cout << userNo << endl;
 		uNumFifo_AjaxToServer.fifoclose();
-		while (numberOfUsers < 2)
+		cout <<"after fifoclose()" << endl;
+		cout << numberOfUsers << endl;
+		if (numberOfUsers < 2)
 		{
 			numberOfUsers++;
+			cout << "if:" << numberOfUsers << endl;
 			uNumFifo_ServerToAjax.openwrite();
 			uNumFifo_ServerToAjax.send(to_string(numberOfUsers));
 			uNumFifo_ServerToAjax.fifoclose();
 		}		
-		gameState = GAME_STATE_INPLAY;
+		if (numberOfUsers == 2)
+		{
+			gameState = GAME_STATE_INPLAY;
+		}
 	}
 	
 	while (gameState == GAME_STATE_INPLAY)

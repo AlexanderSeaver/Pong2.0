@@ -39,8 +39,8 @@ int main()
 	//gets userNumber and paddle position from the javascript
 	Cgicc cgiNum;    // Ajax object
 	form_iterator userNumber = cgiNum.getElement("userNumber");
-	string userno = **userNumber;	
-	if (userno != "0") 
+	string userNo = **userNumber;	
+	if (userNo != "0") 
 	{ 
 		gameState = GAME_STATE_INPLAY; 
 	}
@@ -52,22 +52,30 @@ int main()
 	
 	if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
 	{
-		/*Fifo uNumFifo_ServerToAjax(uNumPipe_ServerToAjax);
+		Fifo uNumFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		Fifo uNumFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		
 		uNumFifo_AjaxToServer.openwrite();
-		uNumFifo_AjaxToServer.send(userno);
-		uNumFifo_AjaxToServer.fifoclose();
-	
+		uNumFifo_AjaxToServer.send(userNo);	
 		uNumFifo_ServerToAjax.openread();
-		userno = uNumFifo_ServerToAjax.recv();
+		userNo = uNumFifo_ServerToAjax.recv();
 		uNumFifo_ServerToAjax.fifoclose();
-		cout << userno;	*/
-		cout << "5";
+		uNumFifo_AjaxToServer.fifoclose();
+		cout << userNo;	
+		
 	}
 	else if(gameState == GAME_STATE_INPLAY)
 	{
+		Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
+		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		
+		paddleFifo_AjaxToServer.openwrite();
+		paddleFifo_AjaxToServer.send("*" + userNo + "*" + paddlePos);
+		paddleFifo_ServerToAjax.openread();
+		padRec = paddleFifo_ServerToAjax.recv();
+		cout << padRec;
+		paddleFifo_AjaxToServer.fifoclose();
+		paddleFifo_ServerToAjax.fifoclose();
 	}
 		
 	

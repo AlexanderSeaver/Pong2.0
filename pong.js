@@ -22,16 +22,22 @@ var xPaddle = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
 var yPaddle = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
 
 var userNumber = 0;
+var padRec = "initialized padRec";
 
-/*Precondition: Page has not been loaded.
-**Postcondition: XML object has been created, canvas has been drawn, game has started*/
-function initializePage()
+
+function initializeXMLHttp()
 {
 	if(navigator.appName == "Microsoft Internet Explorer") {
 		XMLHttp = new ActiveXObject("Microsoft.XMLHTTP");
 	} else {
 		XMLHttp = new XMLHttpRequest(); //this else part is entered using chrome
 	}
+}
+
+/*Precondition: Page has not been loaded.
+**Postcondition: XML object has been created, canvas has been drawn, game has started*/
+function initializePage()
+{
 	refreshInterval = setInterval(function(){drawGame()}, 20);
 	return refreshInterval;
 }
@@ -43,16 +49,17 @@ function getUsername()
 	username = document.getElementById('username').value;
 	document.getElementById('userInfo').innerHTML = username;
 	
-	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
+	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
 			userNumber = XMLHttp.responseText;;
+			document.getElementById('userInfo').innerHTML = userNumber;
 		}
 	}
     
     XMLHttp.send(null);
-	document.getElementById('userInfo').innerHTML = userNumber;
+	
 	
 }
 
@@ -61,6 +68,20 @@ function getUsername()
 function drawGame()
 {
 	clearPaddle(); //clears the current paddle
+	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
+	XMLHttp.open("GET", sendStr, true);
+	XMLHttp.onreadystatechange=function() {
+    	if (XMLHttp.readyState == 4) {
+			padRec = XMLHttp.responseText;
+			
+		}
+	}
+    
+    XMLHttp.send(null);
+	
+	
+	
+	
 	drawBall(xBall, yBall, BALL_SIZE); //sets the ball in motion
     if(upPressed) 
 	{
