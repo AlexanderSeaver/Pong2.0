@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "fifo.h"
 
 using namespace std;
@@ -72,7 +73,7 @@ int main()
 		paddleFifo_AjaxToServer.openwrite();
 		paddleFifo_AjaxToServer.send("*" + userNo + "*" + paddlePos);
 		paddleFifo_ServerToAjax.openread();
-		padRec = paddleFifo_ServerToAjax.recv();
+		string padRec = paddleFifo_ServerToAjax.recv();
 		cout << padRec;
 		paddleFifo_AjaxToServer.fifoclose();
 		paddleFifo_ServerToAjax.fifoclose();
