@@ -40,14 +40,30 @@ int main()
 	//gets userNumber and paddle position from the javascript
 	Cgicc cgiNum;    // Ajax object
 	form_iterator userNumber = cgiNum.getElement("userNumber");
-	string userNo = **userNumber;	
+	string userNo = **userNumber;
+	
+	cout << "Content-Type: text/plain\n\n";	
 	if (userNo != "0") 
 	{ 
-		gameState = GAME_STATE_INPLAY; 
-	}
-	cout << "Content-Type: text/plain\n\n";
+		gameState = GAME_STATE_INPLAY;
+		Cgicc cgiPaddle;    // Ajax object	
+		form_iterator paddley = cgiPaddle.getElement("paddley");
+		string paddlePos = **paddley;
 	
-	if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
+		cout << "!" << "300" << "@" << "300" << "#" << "300" << "$";
+		/*Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
+		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
+	
+		paddleFifo_AjaxToServer.openwrite();
+		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos + "#");
+		paddleFifo_ServerToAjax.openread();
+		string padRec = paddleFifo_ServerToAjax.recv();
+		cout << padRec;
+		paddleFifo_AjaxToServer.fifoclose();
+		paddleFifo_ServerToAjax.fifoclose();*/
+	}
+	
+	else if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
 	{
 		Cgicc cgiCanvasWidth;
 		form_iterator canvasWidthIterator = cgiCanvasWidth.getElement("CANVAS_WIDTH");
@@ -69,23 +85,7 @@ int main()
 		cout << userNo;	
 		
 	}
-	else if(gameState == GAME_STATE_INPLAY)
-	{
-		Cgicc cgiPaddle;    // Ajax object	
-		form_iterator paddley = cgiPaddle.getElement("paddley");
-		string paddlePos = **paddley;
-		
-		Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
-		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
-		
-		paddleFifo_AjaxToServer.openwrite();
-		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos + "#");
-		paddleFifo_ServerToAjax.openread();
-		string padRec = paddleFifo_ServerToAjax.recv();
-		cout << padRec;
-		paddleFifo_AjaxToServer.fifoclose();
-		paddleFifo_ServerToAjax.fifoclose();
-	}
+	
 		
 	
 	return 0;

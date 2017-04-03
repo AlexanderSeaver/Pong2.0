@@ -81,19 +81,21 @@ int main()
 			uNumFifo_ServerToAjax.openwrite();
 			uNumFifo_ServerToAjax.send(to_string(numberOfUsers));
 			uNumFifo_ServerToAjax.fifoclose();
+			if (numberOfUsers == 2)
+			{
+				canvasWidthInt = stoi(canvasWidth, nullptr, 10);
+				canvasHeightInt = stoi(canvasHeight, nullptr, 10);
+				xBall = canvasWidthInt/2;
+				yBall = canvasHeightInt/2;
+				dxBall = canvasWidthInt/100;
+				dyBall = canvasHeightInt/60;
+				xBallStr = to_string(xBall);
+				yBallStr = to_string(yBall);
+				gameState = GAME_STATE_INPLAY;
+				cout << "game state: " << gameState << endl;
+			}
 		}		
-		if (numberOfUsers == 2)
-		{
-			canvasWidthInt = stoi(canvasWidth, nullptr, 10);
-			canvasHeightInt = stoi(canvasHeight, nullptr, 10);
-			xBall = canvasWidthInt/2;
-			yBall = canvasHeightInt/2;
-			dxBall = canvasWidthInt/100;
-			dyBall = canvasHeightInt/60;
-			xBallStr = to_string(xBall);
-			yBallStr = to_string(yBall);
-			gameState = GAME_STATE_INPLAY;
-		}
+
 	}
 	
 	while (gameState == GAME_STATE_INPLAY)
@@ -102,20 +104,22 @@ int main()
 		string paddleRec = paddleFifo_AjaxToServer.recv();
 		string userNo = paddleRec.substr(paddleRec.find("!") + 1, paddleRec.find("@") - (paddleRec.find("!")+1));
 		string paddlePos = paddleRec.substr(paddleRec.find("@") + 1, paddleRec.find("#") - (paddleRec.find("!")+1));
+		cout << userNo << endl;
+		cout << paddlePos << endl;
 		
 		if(userNo == "1")
 		{
 			p1Paddle = paddlePos;
 			paddleFifo_ServerToAjax.openwrite();
 			paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
-			//p1PaddleInt = stoi(p1Paddle, nullptr, 10);
+			p1PaddleInt = stoi(p1Paddle, nullptr, 10);
 		}
 		if(userNo == "2")
 		{
 			p1Paddle = paddlePos;
 			paddleFifo_ServerToAjax.openwrite();
 			paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
-			//p2PaddleInt = stoi(p2Paddle, nullptr, 10);
+			p2PaddleInt = stoi(p2Paddle, nullptr, 10);
 		}
 		
 		if (yBall + dyBall > canvasHeightInt || yBall + dyBall < 0) {

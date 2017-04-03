@@ -10,16 +10,20 @@ var downPressed = false; //down key is not being pressed
 var refreshInterval = 0;
 
 var xBall = CANVAS_WIDTH/2; //starting position of the ball in regards to the x axis
+var xBallTemp;
 var yBall = CANVAS_HEIGHT/2; //starting position of the ball in regards to the y axis
 var dxBall = CANVAS_WIDTH/100; //change in location of the ball in regards to the x axis per refresh
 var dyBall = CANVAS_HEIGHT/60; //change in location of the ball in regards to the y axis per refresh
+var xBallMirror = CANVAS_WIDTH/2;
 const BALL_SIZE = CANVAS_HEIGHT/100; //size of the ball
 
 const PADDLE_HEIGHT = CANVAS_HEIGHT/6; //height of the drawn paddle
 const PADDLE_WIDTH = CANVAS_WIDTH/50; //width of drawn paddle
 const PADDLE_MOVE_INCREMENT = CANVAS_HEIGHT/60; //how much the paddle moves on each refresh
-var xPaddle = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
-var yPaddle = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
+var xPaddle1 = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
+var yPaddle1 = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
+var xPaddle2 = CANVAS_WIDTH - PADDLE_WIDTH; //paddle rests at left edge of canvas
+var yPaddle2 = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
 
 var userNumber = 0;
 var padRec = "initialized padRec";
@@ -38,7 +42,7 @@ function initializeXMLHttp()
 **Postcondition: XML object has been created, canvas has been drawn, game has started*/
 function initializePage()
 {
-	refreshInterval = setInterval(function(){drawGame()}, 20);
+	refreshInterval = setInterval(function(){drawGame()}, 500);
 	return refreshInterval;
 }
 
@@ -68,12 +72,32 @@ function getUsername()
 function drawGame()
 {
 	clearPaddle(); //clears the current paddle
-	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
+	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle1;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
 			padRec = XMLHttp.responseText;
-			
+			document.getElementById('userInfo').innerHTML = padRec;
+			if (userNumber == "1")
+			{
+				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
+				xBall = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#"));
+				yBall = padRec.slice(padRec.indexOf("#") +1, padRec.indexOf("$"));
+			}
+			if (userNumber == "2")
+			{
+				yPaddle1 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
+				xBallTemp = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#"));
+				
+				dxBall = xBallMirror - xBallTemp;
+				xBall += dxBall;
+				xBallMirror = xBallTemp;
+				yBall = padRec.slice(padRec.indexOf("#") +1, padRec.indexOf("$"));
+			}
+			clearPaddle();
+			drawPaddle(xPaddle1, yPaddle1, PADDLE_WIDTH, PADDLE_HEIGHT);
+			drawPaddle(xPaddle2, yPaddle2, PADDLE_WIDTH, PADDLE_HEIGHT);
+			drawBall(xBall, yBall, BALL_SIZE);
 		}
 	}
     
