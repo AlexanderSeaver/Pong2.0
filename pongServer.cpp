@@ -27,14 +27,19 @@ int main()
 	int numberOfUsers = 0;
 	string canvasWidth;
 	string canvasHeight;
+	int canvasWidthInt;
+	int canvasHeightInt;
 	int xBall;
 	int yBall;
 	int dxBall;
 	int dyBall;
+	int paddleHeight = canvasHeightInt/6;
 	string p1Paddle;
 	string p2Paddle;
 	int p1PaddleInt;
 	int p2PaddleInt;
+	string xBallStr;
+    string yBallStr;
 	
 	//pipe information
 	string uNumPipe_ServerToAjax = "uNum_server_to_ajax"; //use this to identify different users
@@ -79,25 +84,49 @@ int main()
 		}		
 		if (numberOfUsers == 2)
 		{
-			xBall = canvasWidth/2;
-			yBall = canvasHeight/2;
-			dxBall = canvasWidth/100;
-			dyBall = canvasHeight/60;
+			canvasWidthInt = stoi(canvasWidth, nullptr, 10);
+			canvasHeightInt = stoi(canvasHeight, nullptr, 10);
+			xBall = canvasWidthInt/2;
+			yBall = canvasHeightInt/2;
+			dxBall = canvasWidthInt/100;
+			dyBall = canvasHeightInt/60;
+			xBallStr = to_string(xBall);
+			yBallStr = to_string(yBall);
 			gameState = GAME_STATE_INPLAY;
 		}
 	}
 	
 	while (gameState == GAME_STATE_INPLAY)
-	{
-		if (yBall + dyBall > canvasHeight || yBall + dyBall < 0) {
+	{	
+		paddleFifo_AjaxToServer.openread();
+		string paddleRec = paddleFifo_AjaxToServer.recv();
+		string userNo = paddleRec.substr(paddleRec.find("!") + 1, paddleRec.find("@") - (paddleRec.find("!")+1));
+		string paddlePos = paddleRec.substr(paddleRec.find("@") + 1, paddleRec.find("#") - (paddleRec.find("!")+1));
+		
+		if(userNo == "1")
+		{
+			p1Paddle = paddlePos;
+			paddleFifo_ServerToAjax.openwrite();
+			paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+			//p1PaddleInt = stoi(p1Paddle, nullptr, 10);
+		}
+		if(userNo == "2")
+		{
+			p1Paddle = paddlePos;
+			paddleFifo_ServerToAjax.openwrite();
+			paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+			//p2PaddleInt = stoi(p2Paddle, nullptr, 10);
+		}
+		
+		if (yBall + dyBall > canvasHeightInt || yBall + dyBall < 0) {
     		dyBall = -dyBall;
     		}
-    	if ( xBall + dxBall > canvasWidth) {
+    	if ( xBall + dxBall > canvasWidthInt) {
     		if (yBall > p2PaddleInt && yBall < p2PaddleInt + paddleHeight) {
     			dxBall = -dxBall;
     			}
     		else {
-    			gameInPlay = false;
+    			gameState = GAME_STATE_PRE;
     			}
     		}
     	if ( xBall + dxBall < 0) {
@@ -105,13 +134,14 @@ int main()
     			dxBall = -dxBall;
     			}
     		else {
-    			gameInPlay = false;
+    			gameState = GAME_STATE_PRE;
     			}
     		}
     	xBall += dxBall;
     	yBall += dyBall;
     	xBallStr = to_string(xBall);
     	yBallStr = to_string(yBall);
+		
 	}
 	return 0;
 }

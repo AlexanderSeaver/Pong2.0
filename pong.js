@@ -49,7 +49,7 @@ function getUsername()
 	username = document.getElementById('username').value;
 	document.getElementById('userInfo').innerHTML = username;
 	
-	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
+	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
@@ -68,7 +68,7 @@ function getUsername()
 function drawGame()
 {
 	clearPaddle(); //clears the current paddle
-	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
+	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
@@ -82,7 +82,7 @@ function drawGame()
 	
 	
 	
-	drawBall(xBall, yBall, BALL_SIZE); //sets the ball in motion
+	/*drawBall(xBall, yBall, BALL_SIZE); //sets the ball in motion
     if(upPressed) 
 	{
         yPaddle -= PADDLE_MOVE_INCREMENT; //move the paddle up
@@ -112,7 +112,7 @@ function drawGame()
         }
     }
     xBall += dxBall; //new changes in ball position
-    yBall += dyBall;
+    yBall += dyBall;*/
 }
 
 /*Precondition: A function has a need to draw the paddle at a certain position and with certain dimensions.

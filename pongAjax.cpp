@@ -79,7 +79,7 @@ int main()
 		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		
 		paddleFifo_AjaxToServer.openwrite();
-		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos);
+		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos + "#");
 		paddleFifo_ServerToAjax.openread();
 		string padRec = paddleFifo_ServerToAjax.recv();
 		cout << padRec;
