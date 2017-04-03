@@ -45,19 +45,23 @@ int main()
 	{ 
 		gameState = GAME_STATE_INPLAY; 
 	}
-	Cgicc cgiPaddle;    // Ajax object	
-	form_iterator paddley = cgiPaddle.getElement("paddley");
-	string paddlePos = **paddley;
-	
 	cout << "Content-Type: text/plain\n\n";
 	
 	if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
 	{
+		Cgicc cgiCanvasWidth;
+		form_iterator canvasWidthIterator = cgiCanvasWidth.getElement("canvasWidth");
+		string canvasWidth = **canvasWidthIterator;
+		
+		Cgicc cgiCanvasHeight;
+		form_iterator canvasHeightIterator = cgiCanvasHeight.getElement("canvasHeight");
+		string canvasHeight = **canvasHeightIterator;
+		
 		Fifo uNumFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		Fifo uNumFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		
 		uNumFifo_AjaxToServer.openwrite();
-		uNumFifo_AjaxToServer.send(userNo);	
+		uNumFifo_AjaxToServer.send("!" + userNo + "@" + canvasWidth + "#" + canvasHeight);	
 		uNumFifo_ServerToAjax.openread();
 		userNo = uNumFifo_ServerToAjax.recv();
 		uNumFifo_ServerToAjax.fifoclose();
@@ -67,11 +71,15 @@ int main()
 	}
 	else if(gameState == GAME_STATE_INPLAY)
 	{
+		Cgicc cgiPaddle;    // Ajax object	
+		form_iterator paddley = cgiPaddle.getElement("paddley");
+		string paddlePos = **paddley;
+		
 		Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		
 		paddleFifo_AjaxToServer.openwrite();
-		paddleFifo_AjaxToServer.send("*" + userNo + "*" + paddlePos);
+		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos);
 		paddleFifo_ServerToAjax.openread();
 		string padRec = paddleFifo_ServerToAjax.recv();
 		cout << padRec;
