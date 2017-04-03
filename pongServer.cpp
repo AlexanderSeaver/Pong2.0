@@ -27,6 +27,14 @@ int main()
 	int numberOfUsers = 0;
 	string canvasWidth;
 	string canvasHeight;
+	int xBall;
+	int yBall;
+	int dxBall;
+	int dyBall;
+	string p1Paddle;
+	string p2Paddle;
+	int p1PaddleInt;
+	int p2PaddleInt;
 	
 	//pipe information
 	string uNumPipe_ServerToAjax = "uNum_server_to_ajax"; //use this to identify different users
@@ -71,13 +79,39 @@ int main()
 		}		
 		if (numberOfUsers == 2)
 		{
+			xBall = canvasWidth/2;
+			yBall = canvasHeight/2;
+			dxBall = canvasWidth/100;
+			dyBall = canvasHeight/60;
 			gameState = GAME_STATE_INPLAY;
 		}
 	}
 	
 	while (gameState == GAME_STATE_INPLAY)
 	{
-		
+		if (yBall + dyBall > canvasHeight || yBall + dyBall < 0) {
+    		dyBall = -dyBall;
+    		}
+    	if ( xBall + dxBall > canvasWidth) {
+    		if (yBall > p2PaddleInt && yBall < p2PaddleInt + paddleHeight) {
+    			dxBall = -dxBall;
+    			}
+    		else {
+    			gameInPlay = false;
+    			}
+    		}
+    	if ( xBall + dxBall < 0) {
+    		if (yBall > p1PaddleInt && yBall < p1PaddleInt + paddleHeight) {
+    			dxBall = -dxBall;
+    			}
+    		else {
+    			gameInPlay = false;
+    			}
+    		}
+    	xBall += dxBall;
+    	yBall += dyBall;
+    	xBallStr = to_string(xBall);
+    	yBallStr = to_string(yBall);
 	}
 	return 0;
 }
