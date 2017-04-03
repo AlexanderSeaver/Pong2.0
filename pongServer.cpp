@@ -25,6 +25,8 @@ int main()
 	const string GAME_STATE_INPLAY = "1"; //while playing the game
 	string gameState = GAME_STATE_PRE;
 	int numberOfUsers = 0;
+	string canvasWidth;
+	string canvasHeight;
 	
 	//pipe information
 	string uNumPipe_ServerToAjax = "uNum_server_to_ajax"; //use this to identify different users
@@ -39,17 +41,26 @@ int main()
 	Fifo paddleFifo_ServerToAjax(paddlePipe_ServerToAjax);
 	
 	//routines
+	
+	string userRec = "initial userRec";
+	
 	while (gameState == GAME_STATE_PRE)
 	{
 		cout << "top of set usernumber" << endl;
 		uNumFifo_AjaxToServer.openread();
 		cout << "after openread." << endl;
-		string userNo = uNumFifo_AjaxToServer.recv();
+		string userRec = uNumFifo_AjaxToServer.recv();
 		cout << "after userNo set" << endl;
-		cout << userNo << endl;
+		//cout << userNo << endl;
 		uNumFifo_AjaxToServer.fifoclose();
 		cout <<"after fifoclose()" << endl;
 		cout << numberOfUsers << endl;
+		string userNo = userRec.substr(userRec.find("!") + 1, userRec.find("@") - (userRec.find("!")+1));
+		cout << "user#: " << userNo << endl;
+		canvasWidth = userRec.substr(userRec.find("@")+1, userRec.find("#") - (userRec.find("@")+1));
+		cout << "width: " << canvasWidth << endl;
+		canvasHeight = userRec.substr(userRec.find("#")+1, userRec.find("$") - (userRec.find("#")+1));
+		cout << "height: " << canvasHeight << endl;
 		if (numberOfUsers < 2)
 		{
 			numberOfUsers++;

@@ -50,18 +50,18 @@ int main()
 	if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
 	{
 		Cgicc cgiCanvasWidth;
-		form_iterator canvasWidthIterator = cgiCanvasWidth.getElement("canvasWidth");
+		form_iterator canvasWidthIterator = cgiCanvasWidth.getElement("CANVAS_WIDTH");
 		string canvasWidth = **canvasWidthIterator;
 		
 		Cgicc cgiCanvasHeight;
-		form_iterator canvasHeightIterator = cgiCanvasHeight.getElement("canvasHeight");
+		form_iterator canvasHeightIterator = cgiCanvasHeight.getElement("CANVAS_HEIGHT");
 		string canvasHeight = **canvasHeightIterator;
 		
 		Fifo uNumFifo_ServerToAjax(uNumPipe_ServerToAjax);
 		Fifo uNumFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		
 		uNumFifo_AjaxToServer.openwrite();
-		uNumFifo_AjaxToServer.send("!" + userNo + "@" + canvasWidth + "#" + canvasHeight);	
+		uNumFifo_AjaxToServer.send("!" + userNo + "@" + canvasWidth + "#" + canvasHeight + "$");	
 		uNumFifo_ServerToAjax.openread();
 		userNo = uNumFifo_ServerToAjax.recv();
 		uNumFifo_ServerToAjax.fifoclose();
