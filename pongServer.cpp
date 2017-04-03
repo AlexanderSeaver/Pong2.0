@@ -100,51 +100,85 @@ int main()
 	
 	while (gameState == GAME_STATE_INPLAY)
 	{	
+		cout << "in while(gameState == GAME_STATE_INPLAY) loop" << endl;
 		paddleFifo_AjaxToServer.openread();
+		cout << "test1" << endl;
 		string paddleRec = paddleFifo_AjaxToServer.recv();
+		cout << "test2" << endl;
 		string userNo = paddleRec.substr(paddleRec.find("!") + 1, paddleRec.find("@") - (paddleRec.find("!")+1));
+		cout << "test3" << endl;
 		string paddlePos = paddleRec.substr(paddleRec.find("@") + 1, paddleRec.find("#") - (paddleRec.find("!")+1));
+		cout << "test4" << endl;
 		cout << userNo << endl;
+		cout << "test5" << endl;
 		cout << paddlePos << endl;
+		cout << "test6" << endl;
 		
 		if(userNo == "1")
 		{
+		cout << "test7" << endl;
 			p1Paddle = paddlePos;
+			cout << "test8" << endl;
 			paddleFifo_ServerToAjax.openwrite();
+			cout << "test9" << endl;
 			paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+			cout << "test10" << endl;
 			p1PaddleInt = stoi(p1Paddle, nullptr, 10);
+			cout << "test11" << endl;
 		}
 		if(userNo == "2")
 		{
+		cout << "test12" << endl;
 			p1Paddle = paddlePos;
+			cout << "test13" << endl;
 			paddleFifo_ServerToAjax.openwrite();
+			cout << "test14" << endl;
 			paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+			cout << "test15" << endl;
 			p2PaddleInt = stoi(p2Paddle, nullptr, 10);
+			cout << "test16" << endl;
 		}
-		
+		cout << "test17" << endl;
 		if (yBall + dyBall > canvasHeightInt || yBall + dyBall < 0) {
+		cout << "test18" << endl;
     		dyBall = -dyBall;
+    		cout << "test19" << endl;
     		}
     	if ( xBall + dxBall > canvasWidthInt) {
+    	cout << "test20" << endl;
     		if (yBall > p2PaddleInt && yBall < p2PaddleInt + paddleHeight) {
+    		cout << "test21" << endl;
     			dxBall = -dxBall;
+    			cout << "test22" << endl;
     			}
     		else {
+    		cout << "test23" << endl;
     			gameState = GAME_STATE_PRE;
+    			cout << "test24" << endl;
     			}
     		}
     	if ( xBall + dxBall < 0) {
+    	cout << "test25" << endl;
     		if (yBall > p1PaddleInt && yBall < p1PaddleInt + paddleHeight) {
+    		cout << "test26" << endl;
     			dxBall = -dxBall;
+    			cout << "test27" << endl;
     			}
     		else {
+    		cout << "test28" << endl;
     			gameState = GAME_STATE_PRE;
+    			cout << "test29" << endl;
     			}
     		}
+    		cout << "test30" << endl;
     	xBall += dxBall;
+    	cout << "test31" << endl;
     	yBall += dyBall;
+    	cout << "test32" << endl;
     	xBallStr = to_string(xBall);
+    	cout << "test33" << endl;
     	yBallStr = to_string(yBall);
+    	cout << "test34" << endl;
 		
 	}
 	return 0;

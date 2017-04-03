@@ -28,6 +28,7 @@ var yPaddle2 = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway
 var userNumber = 0;
 var padRec = "initialized padRec";
 
+var safeguard = false;
 
 function initializeXMLHttp()
 {
@@ -50,6 +51,14 @@ function initializePage()
 **Postcondition: Username is set and added to the userInfo div*/
 function getUsername()
 {
+	if(safeguard)
+	{
+		console.log("Safeguard is True");
+		return;
+	}
+	console.log(safeguard);
+	safeguard = true;
+	console.log(safeguard);
 	username = document.getElementById('username').value;
 	document.getElementById('userInfo').innerHTML = username;
 	
@@ -59,18 +68,23 @@ function getUsername()
     	if (XMLHttp.readyState == 4) {
 			userNumber = XMLHttp.responseText;;
 			document.getElementById('userInfo').innerHTML = userNumber;
+			safeguard = false;
 		}
 	}
     
     XMLHttp.send(null);
-	
-	
 }
 
 /*Precondition: Game has been started.
 **Postcondition: The game canvas has been updated.*/
 function drawGame()
 {
+	if(safeguard)
+	{
+		console.log("Safeguard is True");
+		return;
+	}
+	safeguard = true;
 	clearPaddle(); //clears the current paddle
 	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle1;
 	XMLHttp.open("GET", sendStr, true);
@@ -98,6 +112,7 @@ function drawGame()
 			drawPaddle(xPaddle1, yPaddle1, PADDLE_WIDTH, PADDLE_HEIGHT);
 			drawPaddle(xPaddle2, yPaddle2, PADDLE_WIDTH, PADDLE_HEIGHT);
 			drawBall(xBall, yBall, BALL_SIZE);
+			safeguard = false;
 		}
 	}
     

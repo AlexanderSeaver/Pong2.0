@@ -3,6 +3,7 @@
 /*************************************************************/
 
 #include <iostream>
+#include <fstream>
 // Stuff for AJAX
 #include "cgicc/Cgicc.h"
 #include "cgicc/HTTPHTMLHeader.h"
@@ -42,6 +43,9 @@ int main()
 	form_iterator userNumber = cgiNum.getElement("userNumber");
 	string userNo = **userNumber;
 	
+	ofstream logfile;
+	
+	
 	cout << "Content-Type: text/plain\n\n";	
 	if (userNo != "0") 
 	{ 
@@ -50,17 +54,17 @@ int main()
 		form_iterator paddley = cgiPaddle.getElement("paddley");
 		string paddlePos = **paddley;
 	
-		cout << "!" << "300" << "@" << "300" << "#" << "300" << "$";
-		/*Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
+		//cout << "!" << "300" << "@" << "300" << "#" << "300" << "$";
+		Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
-	
+				
 		paddleFifo_AjaxToServer.openwrite();
 		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos + "#");
 		paddleFifo_ServerToAjax.openread();
 		string padRec = paddleFifo_ServerToAjax.recv();
 		cout << padRec;
 		paddleFifo_AjaxToServer.fifoclose();
-		paddleFifo_ServerToAjax.fifoclose();*/
+		paddleFifo_ServerToAjax.fifoclose();
 	}
 	
 	else if(gameState == GAME_STATE_PRE) // obtain the actual user number from the server (1 or 2)
@@ -77,7 +81,13 @@ int main()
 		Fifo uNumFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		
 		uNumFifo_AjaxToServer.openwrite();
-		uNumFifo_AjaxToServer.send("!" + userNo + "@" + canvasWidth + "#" + canvasHeight + "$");	
+		logfile.open("/tmp/pong.log",ios::out|ios::app);
+		logfile << "open write" << endl;
+		logfile.close();
+		uNumFifo_AjaxToServer.send("!" + userNo + "@" + canvasWidth + "#" + canvasHeight + "$");
+		logfile.open("/tmp/pong.log",ios::out|ios::app);
+		logfile << "send ajax to server" << endl;
+		logfile.close();
 		uNumFifo_ServerToAjax.openread();
 		userNo = uNumFifo_ServerToAjax.recv();
 		uNumFifo_ServerToAjax.fifoclose();
