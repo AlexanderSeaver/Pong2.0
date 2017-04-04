@@ -19,7 +19,7 @@ const BALL_SIZE = Math.round(CANVAS_HEIGHT/100); //size of the ball
 
 const PADDLE_HEIGHT = Math.round(CANVAS_HEIGHT/6); //height of the drawn paddle
 const PADDLE_WIDTH = Math.round(CANVAS_WIDTH/50); //width of drawn paddle
-const PADDLE_MOVE_INCREMENT = Math.round(CANVAS_HEIGHT/60); //how much the paddle moves on each refresh
+const PADDLE_MOVE_INCREMENT = parseInt(Math.round(CANVAS_HEIGHT/60)); //how much the paddle moves on each refresh
 var xPaddle1 = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
 var yPaddle1 = Math.round((CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2)); //paddle starts at halfway down the canvas
 var xPaddle2 = Math.round(CANVAS_WIDTH - PADDLE_WIDTH); //paddle rests at left edge of canvas
@@ -79,6 +79,15 @@ function getUsername()
 **Postcondition: The game canvas has been updated.*/
 function drawGame()
 {
+	if(upPressed) 
+	{
+        yPaddle1 = (yPaddle1 - PADDLE_MOVE_INCREMENT); //move the paddle up
+    } 
+	else if(downPressed) 
+	{
+        yPaddle1 = (parseInt(yPaddle1) + parseInt(PADDLE_MOVE_INCREMENT)); //move the paddle down
+    }
+    
 	if(safeguard)
 	{
 		console.log("Safeguard is True");
@@ -98,9 +107,9 @@ function drawGame()
 				xBall = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#"));
 				yBall = padRec.slice(padRec.indexOf("#") +1, padRec.indexOf("$"));
 			}
-			if (userNumber == "2")
+			else if (userNumber == "2")
 			{
-				yPaddle1 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
+				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
 				xBallTemp = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#"));
 				
 				dxBall = xBallMirror - xBallTemp;
@@ -117,41 +126,6 @@ function drawGame()
 	}
     
     XMLHttp.send(null);
-	
-	
-	
-	
-	/*drawBall(xBall, yBall, BALL_SIZE); //sets the ball in motion
-    if(upPressed) 
-	{
-        yPaddle -= PADDLE_MOVE_INCREMENT; //move the paddle up
-    } 
-	else if(downPressed) 
-	{
-        yPaddle += PADDLE_MOVE_INCREMENT; //move the paddle down
-    }
-    drawPaddle(xPaddle, yPaddle, PADDLE_WIDTH, PADDLE_HEIGHT);
-    if (yBall + dyBall > CANVAS_HEIGHT || yBall + dyBall < CANVAS_HEIGHT_MIN) //if ball hits top or bottom of canvas
-	{
-		dyBall = -dyBall;
-    }
-    if (xBall + dxBall > CANVAS_WIDTH) //if ball hits right side of the canvas
-	{
-		dxBall = -dxBall;
-	}
-    else if (xBall + dxBall < CANVAS_WIDTH_MIN + PADDLE_WIDTH) //if ball hits left side of the canvas
-	{
-		if (yBall > yPaddle && yBall < yPaddle + PADDLE_HEIGHT) //if the ball hits the paddle
-		{
-			dxBall = -dxBall;
-        } 
-		else //if the ball does not hit the paddle
-		{
-			clearInterval(refreshInterval);
-        }
-    }
-    xBall += dxBall; //new changes in ball position
-    yBall += dyBall;*/
 }
 
 /*Precondition: A function has a need to draw the paddle at a certain position and with certain dimensions.

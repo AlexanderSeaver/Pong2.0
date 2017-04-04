@@ -33,7 +33,7 @@ int main()
 	int yBall;
 	int dxBall;
 	int dyBall;
-	int paddleHeight = canvasHeightInt/6;
+	int paddleHeight;
 	string p1Paddle;
 	string p2Paddle;
 	int p1PaddleInt;
@@ -86,6 +86,7 @@ int main()
 			{
 				canvasWidthInt = stoi(canvasWidth, nullptr, 10);
 				canvasHeightInt = stoi(canvasHeight, nullptr, 10);
+				paddleHeight == canvasHeightInt/6;
 				xBall = canvasWidthInt/2;
 				yBall = canvasHeightInt/2;
 				dxBall = canvasWidthInt/100;
@@ -119,39 +120,45 @@ int main()
 		
 		if(userNo == "1")
 		{
-		cout << "test7" << endl;
+			cout << "test7" << endl;
 			p1Paddle = paddlePos;
 			cout << "test8" << endl;
 			paddleFifo_ServerToAjax.openwrite();
 			cout << "test9" << endl;
-			paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+			paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
 			cout << "test10" << endl;
 			p1PaddleInt = stoi(p1Paddle, nullptr, 10);
+			cout << endl << "User 1: " << p1PaddleInt << "YBall: " << yBall << endl;
 			cout << "test11" << endl;
+			paddleFifo_AjaxToServer.fifoclose();
+    		paddleFifo_ServerToAjax.fifoclose();
 		}
-		if(userNo == "2")
+		else if(userNo == "2")
 		{
-		cout << "test12" << endl;
+			cout << "test12" << endl;
 			p2Paddle = paddlePos;
 			cout << "test13" << endl;
 			paddleFifo_ServerToAjax.openwrite();
 			cout << "test14" << endl;
-			paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+			paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
 			cout << "test15" << endl;
 			p2PaddleInt = stoi(p2Paddle, nullptr, 10);
+			cout << endl << "User 2: " << p2PaddleInt << "YBall: " << yBall << endl;
 			cout << "test16" << endl;
+			paddleFifo_AjaxToServer.fifoclose();
+    		paddleFifo_ServerToAjax.fifoclose();
 		}
 		cout << "test17" << endl;
-		if (yBall + dyBall > canvasHeightInt || yBall + dyBall < 0) 
+		if ((yBall + dyBall) >= canvasHeightInt || (yBall + dyBall) <= 0) 
 		{
 			cout << "test18" << endl;
     		dyBall = -dyBall;
     		cout << "test19" << endl;
     	}
-    	else if ( xBall + dxBall > canvasWidthInt) 
+    	else if ( (xBall + dxBall) >= (canvasWidthInt - canvasWidthInt/50))
     	{
     		cout << "test20" << endl;
-    		if (yBall > p2PaddleInt && yBall < p2PaddleInt + paddleHeight) 
+    		if ((yBall >= p2PaddleInt) && (yBall <= (p2PaddleInt + paddleHeight))) 
     		{
     			cout << "test21" << endl;
     			dxBall = -dxBall;
@@ -164,10 +171,10 @@ int main()
     			cout << "test24" << endl;
     		}
     	}
-    	else if ( xBall + dxBall < 0) 
+    	else if ( (xBall + dxBall) <= (canvasWidthInt/50)) 
     	{
     		cout << "test25" << endl;
-    		if (yBall > p1PaddleInt && yBall < p1PaddleInt + paddleHeight) 
+    		if ((yBall >= p1PaddleInt) && (yBall <= (p1PaddleInt + paddleHeight))) 
     		{
     			cout << "test26" << endl;
     			dxBall = -dxBall;
@@ -190,8 +197,7 @@ int main()
     	yBallStr = to_string(yBall);
     	cout << "test34" << endl;
     	
-    	paddleFifo_AjaxToServer.fifoclose();
-    	paddleFifo_ServerToAjax.fifoclose();
+
     	
     	
 		
