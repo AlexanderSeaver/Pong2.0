@@ -86,7 +86,7 @@ int main()
 			{
 				canvasWidthInt = stoi(canvasWidth, nullptr, 10);
 				canvasHeightInt = stoi(canvasHeight, nullptr, 10);
-				paddleHeight == canvasHeightInt/6;
+				paddleHeight = canvasHeightInt/6;
 				xBall = canvasWidthInt/2;
 				yBall = canvasHeightInt/2;
 				dxBall = canvasWidthInt/100;
