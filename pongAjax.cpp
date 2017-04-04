@@ -51,15 +51,24 @@ int main()
 	{ 
 		gameState = GAME_STATE_INPLAY;
 		Cgicc cgiPaddle;    // Ajax object	
-		form_iterator paddley = cgiPaddle.getElement("paddley");
-		string paddlePos = **paddley;
+		form_iterator yPaddle1 = cgiPaddle.getElement("yPaddle1");
+		string paddlePos = **yPaddle1;
+		
+		logfile.open("/tmp/pong.log",ios::out|ios::app);
+		logfile << "open write (paddlePos: )" << paddlePos << endl;
+		logfile.close();
 	
 		//cout << "!" << "300" << "@" << "300" << "#" << "300" << "$";
-		Fifo paddleFifo_AjaxToServer(uNumPipe_AjaxToServer);
-		Fifo paddleFifo_ServerToAjax(uNumPipe_ServerToAjax);
+		Fifo paddleFifo_AjaxToServer(paddlePipe_AjaxToServer);
+		Fifo paddleFifo_ServerToAjax(paddlePipe_ServerToAjax);
 				
 		paddleFifo_AjaxToServer.openwrite();
 		paddleFifo_AjaxToServer.send("!" + userNo + "@" + paddlePos + "#");
+		
+		logfile.open("/tmp/pong.log",ios::out|ios::app);
+		logfile << "!" << userNo << "@" << paddlePos << "#" << endl;
+		logfile.close();
+		
 		paddleFifo_ServerToAjax.openread();
 		string padRec = paddleFifo_ServerToAjax.recv();
 		cout << padRec;
@@ -81,13 +90,7 @@ int main()
 		Fifo uNumFifo_AjaxToServer(uNumPipe_AjaxToServer);
 		
 		uNumFifo_AjaxToServer.openwrite();
-		logfile.open("/tmp/pong.log",ios::out|ios::app);
-		logfile << "open write" << endl;
-		logfile.close();
 		uNumFifo_AjaxToServer.send("!" + userNo + "@" + canvasWidth + "#" + canvasHeight + "$");
-		logfile.open("/tmp/pong.log",ios::out|ios::app);
-		logfile << "send ajax to server" << endl;
-		logfile.close();
 		uNumFifo_ServerToAjax.openread();
 		userNo = uNumFifo_ServerToAjax.recv();
 		uNumFifo_ServerToAjax.fifoclose();

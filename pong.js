@@ -3,27 +3,27 @@ var ctx = $("#canvas")[0].getContext("2d"); //unsure but necessary for drawing
 ctx.fillStyle = 'rgb(255, 255, 255)';
 const CANVAS_HEIGHT_MIN = 0; //location of the origin
 const CANVAS_WIDTH_MIN = 0; //location of the origin
-const CANVAS_HEIGHT = $("canvas").height(); //height of the game canvas
-const CANVAS_WIDTH = $("canvas").width(); //width of game canvas
+const CANVAS_HEIGHT = Math.round($("canvas").height()); //height of the game canvas
+const CANVAS_WIDTH = Math.round($("canvas").width()); //width of game canvas
 var upPressed = false; //up key is not being pressed
 var downPressed = false; //down key is not being pressed
 var refreshInterval = 0;
 
-var xBall = CANVAS_WIDTH/2; //starting position of the ball in regards to the x axis
+var xBall = Math.round(CANVAS_WIDTH/2); //starting position of the ball in regards to the x axis
 var xBallTemp;
-var yBall = CANVAS_HEIGHT/2; //starting position of the ball in regards to the y axis
-var dxBall = CANVAS_WIDTH/100; //change in location of the ball in regards to the x axis per refresh
-var dyBall = CANVAS_HEIGHT/60; //change in location of the ball in regards to the y axis per refresh
-var xBallMirror = CANVAS_WIDTH/2;
-const BALL_SIZE = CANVAS_HEIGHT/100; //size of the ball
+var yBall = Math.round(CANVAS_HEIGHT/2); //starting position of the ball in regards to the y axis
+var dxBall = Math.round(CANVAS_WIDTH/100); //change in location of the ball in regards to the x axis per refresh
+var dyBall = Math.round(CANVAS_HEIGHT/60); //change in location of the ball in regards to the y axis per refresh
+var xBallMirror = Math.round(CANVAS_WIDTH/2);
+const BALL_SIZE = Math.round(CANVAS_HEIGHT/100); //size of the ball
 
-const PADDLE_HEIGHT = CANVAS_HEIGHT/6; //height of the drawn paddle
-const PADDLE_WIDTH = CANVAS_WIDTH/50; //width of drawn paddle
-const PADDLE_MOVE_INCREMENT = CANVAS_HEIGHT/60; //how much the paddle moves on each refresh
+const PADDLE_HEIGHT = Math.round(CANVAS_HEIGHT/6); //height of the drawn paddle
+const PADDLE_WIDTH = Math.round(CANVAS_WIDTH/50); //width of drawn paddle
+const PADDLE_MOVE_INCREMENT = Math.round(CANVAS_HEIGHT/60); //how much the paddle moves on each refresh
 var xPaddle1 = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
-var yPaddle1 = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
-var xPaddle2 = CANVAS_WIDTH - PADDLE_WIDTH; //paddle rests at left edge of canvas
-var yPaddle2 = (CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2); //paddle starts at halfway down the canvas
+var yPaddle1 = Math.round((CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2)); //paddle starts at halfway down the canvas
+var xPaddle2 = Math.round(CANVAS_WIDTH - PADDLE_WIDTH); //paddle rests at left edge of canvas
+var yPaddle2 = Math.round(Math.round((CANVAS_HEIGHT/2)) - Math.round((PADDLE_HEIGHT/2))); //paddle starts at halfway down the canvas
 
 var userNumber = 0;
 var padRec = "initialized padRec";
@@ -62,7 +62,7 @@ function getUsername()
 	username = document.getElementById('username').value;
 	document.getElementById('userInfo').innerHTML = username;
 	
-	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
+	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
@@ -85,13 +85,13 @@ function drawGame()
 		return;
 	}
 	safeguard = true;
-	clearPaddle(); //clears the current paddle
-	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle=" + yPaddle1;
+	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle1=" + yPaddle1;
+	document.getElementById('userInfo').innerHTML = yPaddle1;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() {
     	if (XMLHttp.readyState == 4) {
 			padRec = XMLHttp.responseText;
-			document.getElementById('userInfo').innerHTML = padRec;
+			//document.getElementById('userInfo').innerHTML = padRec;
 			if (userNumber == "1")
 			{
 				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
