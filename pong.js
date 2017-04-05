@@ -1,77 +1,89 @@
-document.getElementById("canvas").style.background = 'rgb(0, 0, 0)';
+/*
+Pong 2.0 Javascript
+Authors: Alexander Seaver and Coire Gavin-Hanner
+Function: Contains functions to pass game information to remote
+server and draw the game based on the recieved information
+from the server.
+Last Modified: April 04, 2017
+*/
+
+document.getElementById("canvas").style.background = 'rgb(0, 0, 0)'; //set canvas color to black
 var ctx = $("#canvas")[0].getContext("2d"); //unsure but necessary for drawing
-ctx.fillStyle = 'rgb(255, 255, 255)';
+ctx.fillStyle = 'rgb(255, 255, 255)'; //sets the fill color for ball and paddles to white
 const CANVAS_HEIGHT_MIN = 0; //location of the origin
 const CANVAS_WIDTH_MIN = 0; //location of the origin
 const CANVAS_HEIGHT = Math.round($("canvas").height()); //height of the game canvas
 const CANVAS_WIDTH = Math.round($("canvas").width()); //width of game canvas
-var upPressed = false; //up key is not being pressed
-var downPressed = false; //down key is not being pressed
-var refreshInterval = 0;
 
 var xBall = Math.round(CANVAS_WIDTH/2); //starting position of the ball in regards to the x axis
-var xBallTemp;
+var xBallTemp; //used as a temp storage in mirroring the canvas for user 2
 var yBall = Math.round(CANVAS_HEIGHT/2); //starting position of the ball in regards to the y axis
-var dxBall = Math.round(CANVAS_WIDTH/100); //change in location of the ball in regards to the x axis per refresh
+var dxBall = Math.round(CANVAS_WIDTH/30); //change in location of the ball in regards to the x axis per refresh
 var dyBall = Math.round(CANVAS_HEIGHT/60); //change in location of the ball in regards to the y axis per refresh
-var xBallMirror = Math.round(CANVAS_WIDTH/2);
+var xBallMirror = Math.round(CANVAS_WIDTH/2); //used in mirroring the canvas for user 2
 const BALL_SIZE = Math.round(CANVAS_HEIGHT/100); //size of the ball
 
 const PADDLE_HEIGHT = Math.round(CANVAS_HEIGHT/6); //height of the drawn paddle
 const PADDLE_WIDTH = Math.round(CANVAS_WIDTH/50); //width of drawn paddle
-const PADDLE_MOVE_INCREMENT = parseInt(Math.round(CANVAS_HEIGHT/60)); //how much the paddle moves on each refresh
+const PADDLE_MOVE_INCREMENT = parseInt(Math.round(CANVAS_HEIGHT/50)); //how much the paddle moves on each refresh
 var xPaddle1 = CANVAS_WIDTH_MIN; //paddle rests at left edge of canvas
-var yPaddle1 = Math.round((CANVAS_HEIGHT/2) - (PADDLE_HEIGHT/2)); //paddle starts at halfway down the canvas
+var yPaddle1 = Math.round(Math.round((CANVAS_HEIGHT/2)) + Math.round((PADDLE_HEIGHT/2))); //paddle starts at halfway down the canvas
 var xPaddle2 = Math.round(CANVAS_WIDTH - PADDLE_WIDTH); //paddle rests at left edge of canvas
-var yPaddle2 = Math.round(Math.round((CANVAS_HEIGHT/2)) - Math.round((PADDLE_HEIGHT/2))); //paddle starts at halfway down the canvas
+var yPaddle2 = Math.round(Math.round((CANVAS_HEIGHT/2)) + Math.round((PADDLE_HEIGHT/2))); //paddle starts at halfway down the canvas
 
-var userNumber = 0;
-var padRec = "initialized padRec";
+var userNumber = 0; //starts the script with 0 active users
+var padRec = "initialized padRec"; //string to hold the recieved paddle and ball coordinates from the server
+var upPressed = false; //up key is not being pressed
+var downPressed = false; //down key is not being pressed
+var refreshInterval = 0; //used to hold the timer ID
+const CLOCK_MS = 500; //the millisecond value at which the game refreshes
+var safeguard = false; //boolean to track active cgi requests;
 
-var safeguard = false;
-
+/*Precondition: Page has not loaded.
+**Postcondition: XML object has been created according to user browser.*/
 function initializeXMLHttp()
 {
-	if(navigator.appName == "Microsoft Internet Explorer") {
-		XMLHttp = new ActiveXObject("Microsoft.XMLHTTP");
-	} else {
-		XMLHttp = new XMLHttpRequest(); //this else part is entered using chrome
+	if(navigator.appName == "Microsoft Internet Explorer") 
+	{
+		XMLHttp = new ActiveXObject("Microsoft.XMLHTTP"); //if the user is using IE
+	} 
+	else 
+	{
+		XMLHttp = new XMLHttpRequest(); //this part is entered using any browser other than IE
 	}
 }
 
 /*Precondition: Page has not been loaded.
-**Postcondition: XML object has been created, canvas has been drawn, game has started*/
-function initializePage()
+**Postcondition: Game has started and is refreshing at the CLOCK_MS value.*/
+function startGame()
 {
-	refreshInterval = setInterval(function(){drawGame()}, 500);
+	refreshInterval = setInterval(function(){drawGame()}, CLOCK_MS);
 	return refreshInterval;
 }
 
 /*Precondition: Set Username button has been clicked
 **Postcondition: Username is set and added to the userInfo div*/
-function getUsername()
+function connectToServer()
 {
-	if(safeguard)
+	if(safeguard) //prevents a new cgi from being created if there is already an active cgi.
 	{
 		console.log("Safeguard is True");
 		return;
 	}
-	console.log(safeguard);
 	safeguard = true;
-	console.log(safeguard);
-	username = document.getElementById('username').value;
-	document.getElementById('userInfo').innerHTML = username;
 	
 	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
 	XMLHttp.open("GET", sendStr, true);
-	XMLHttp.onreadystatechange=function() {
-    	if (XMLHttp.readyState == 4) {
-			userNumber = XMLHttp.responseText;;
-			document.getElementById('userInfo').innerHTML = userNumber;
+	
+	XMLHttp.onreadystatechange=function() //check for response from the cgi
+	{
+    	if (XMLHttp.readyState == 4) //the cgi has sent a response
+		{
+			userNumber = XMLHttp.responseText; //update the userNumber to that assigned by the server
 			safeguard = false;
 		}
 	}
-    
+	
     XMLHttp.send(null);
 }
 
@@ -88,39 +100,39 @@ function drawGame()
         yPaddle1 = (parseInt(yPaddle1) + parseInt(PADDLE_MOVE_INCREMENT)); //move the paddle down
     }
     
-	if(safeguard)
+	if(safeguard) //prevents a new cgi from being created if there is already an active cgi.
 	{
 		console.log("Safeguard is True");
 		return;
 	}
 	safeguard = true;
 	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle1=" + yPaddle1;
-	document.getElementById('userInfo').innerHTML = yPaddle1;
 	XMLHttp.open("GET", sendStr, true);
-	XMLHttp.onreadystatechange=function() {
-    	if (XMLHttp.readyState == 4) {
-			padRec = XMLHttp.responseText;
-			//document.getElementById('userInfo').innerHTML = padRec;
+	XMLHttp.onreadystatechange=function() //check for response from the cgi
+	{
+    	if (XMLHttp.readyState == 4) //the cgi has sent a response
+		{
+			padRec = XMLHttp.responseText; //Expected recieve string: "!rightPaddleYPosition@ballXCoordinate#ballYCoordinate$" 
 			if (userNumber == "1")
 			{
-				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
-				xBall = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#"));
-				yBall = padRec.slice(padRec.indexOf("#") +1, padRec.indexOf("$"));
+				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@")); //obtain right paddle as assigned by the server
+				xBall = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#")); //obtain ball position as assigned by the server
+				yBall = padRec.slice(padRec.indexOf("#") +1, padRec.indexOf("$")); //obtain ball position as assigned by the server
 			}
 			else if (userNumber == "2")
 			{
-				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@"));
-				xBallTemp = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#"));
+				yPaddle2 = padRec.slice(padRec.indexOf("!")+1, padRec.indexOf("@")); //obtain right paddle as assigned by the server
+				xBallTemp = padRec.slice(padRec.indexOf("@") +1, padRec.indexOf("#")); //obtain ball position as assigned by the server
 				
-				dxBall = xBallMirror - xBallTemp;
+				dxBall = xBallMirror - xBallTemp; //mirror the direction the ball is traveling
 				xBall += dxBall;
 				xBallMirror = xBallTemp;
 				yBall = padRec.slice(padRec.indexOf("#") +1, padRec.indexOf("$"));
 			}
-			clearPaddle();
-			drawPaddle(xPaddle1, yPaddle1, PADDLE_WIDTH, PADDLE_HEIGHT);
-			drawPaddle(xPaddle2, yPaddle2, PADDLE_WIDTH, PADDLE_HEIGHT);
-			drawBall(xBall, yBall, BALL_SIZE);
+			clearPaddle(); //clear the game canvas
+			drawPaddle(xPaddle1, yPaddle1, PADDLE_WIDTH, PADDLE_HEIGHT); //draw left paddle
+			drawPaddle(xPaddle2, yPaddle2, PADDLE_WIDTH, PADDLE_HEIGHT); //draw right paddle
+			drawBall(xBall, yBall, BALL_SIZE); //draw ball
 			safeguard = false;
 		}
 	}
@@ -153,6 +165,7 @@ function drawBall (x, y, r)
     ctx.fill();
 }
 
+//Tracks any key presses
 $(document).keydown(function(e) { //gives the value of the key when you press down
     if(e.keyCode == 40) {
         downPressed = true;
@@ -167,6 +180,7 @@ $(document).keydown(function(e) { //gives the value of the key when you press do
     }
 });
 
+//Tracks any key releases
 $(document).keyup(function(e) { //tells the program that you have stopped pressing the key
     if(e.keyCode == 40) {
         downPressed = false;
@@ -181,9 +195,17 @@ $(document).keyup(function(e) { //tells the program that you have stopped pressi
     }
 });
 
+//Disables the arrow keys and spacebar from performing their normal function (scrolling and page down respectively)
 window.addEventListener("keydown", function(e) {
     // space and arrow keys
     if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         e.preventDefault();
     }
 }, false);
+
+function getRandomInt(min, max) 
+{
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}

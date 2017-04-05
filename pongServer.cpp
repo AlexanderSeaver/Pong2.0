@@ -15,6 +15,8 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 #include "fifo.h"
 using namespace std;
 
@@ -23,23 +25,28 @@ int main()
 	//game state information
 	const string GAME_STATE_PRE = "-1"; //while setting usernumbers
 	const string GAME_STATE_INPLAY = "1"; //while playing the game
-	string gameState = GAME_STATE_PRE;
-	int numberOfUsers = 0;
-	string canvasWidth;
-	string canvasHeight;
-	int canvasWidthInt;
-	int canvasHeightInt;
-	int xBall;
-	int yBall;
-	int dxBall;
-	int dyBall;
-	int paddleHeight;
-	string p1Paddle;
-	string p2Paddle;
-	int p1PaddleInt;
-	int p2PaddleInt;
-	string xBallStr;
-    string yBallStr;
+	const string GAME_STATE_POST = "2"; //after the game ends
+	string gameState = GAME_STATE_PRE; //initialize game state to not in play
+	int numberOfUsers = 0; //initialize the system with 0 users
+	string canvasWidth; //string to track canvas width
+	string canvasHeight; //string to track canvas height
+	int canvasWidthInt; //int to track canvas width
+	int canvasHeightInt; //int to track canvas height
+	string xBallStr; //string position of the ball on the x axis
+    string yBallStr; //string position of the ball on the y axis
+	int xBall; //int position of the ball on the x axis
+	int yBall; //int position of the ball on the y axis
+	int dxBall; //change in the x position of the ball
+	int dyBall; //change in the y position of the ball
+	int paddleHeight; //height of the drawn paddle
+	int paddleWidth; //width of the drawn paddle
+	string p1Paddle; //string to track user one's paddle
+	string p2Paddle; //string to track user two's paddle
+	int p1PaddleInt; //int to track user one's paddle
+	int p2PaddleInt; //int to track user two's paddle
+	string userNo; //string to track usernumber
+	
+	srand(clock());
 	
 	//pipe information
 	string uNumPipe_ServerToAjax = "uNum_server_to_ajax"; //use this to identify different users
@@ -57,150 +64,122 @@ int main()
 	
 	string userRec = "initial userRec";
 	string paddleRec = "initial paddleRec";
-	
-	while (gameState == GAME_STATE_PRE)
+	cout << "pongServer Start" << endl;
+	while (1)
 	{
-		cout << "top of set usernumber" << endl;
-		uNumFifo_AjaxToServer.openread();
-		cout << "after openread." << endl;
-		string userRec = uNumFifo_AjaxToServer.recv();
-		cout << "after userNo set" << endl;
-		//cout << userNo << endl;
-		uNumFifo_AjaxToServer.fifoclose();
-		cout <<"after fifoclose()" << endl;
-		cout << numberOfUsers << endl;
-		string userNo = userRec.substr(userRec.find("!") + 1, userRec.find("@") - (userRec.find("!")+1));
-		cout << "user#: " << userNo << endl;
-		canvasWidth = userRec.substr(userRec.find("@")+1, userRec.find("#") - (userRec.find("@")+1));
-		cout << "width: " << canvasWidth << endl;
-		canvasHeight = userRec.substr(userRec.find("#")+1, userRec.find("$") - (userRec.find("#")+1));
-		cout << "height: " << canvasHeight << endl;
-		if (numberOfUsers < 2)
+		while (gameState == GAME_STATE_PRE)
 		{
-			numberOfUsers++;
-			cout << "if:" << numberOfUsers << endl;
-			uNumFifo_ServerToAjax.openwrite();
-			uNumFifo_ServerToAjax.send(to_string(numberOfUsers));
-			uNumFifo_ServerToAjax.fifoclose();
-			if (numberOfUsers == 2)
+			uNumFifo_AjaxToServer.openread();
+			string userRec = uNumFifo_AjaxToServer.recv(); //Expected recieve string: "!usernumber@canvaswidth#canvasheight$"
+			uNumFifo_AjaxToServer.fifoclose();
+			userNo = userRec.substr(userRec.find("!") + 1, userRec.find("@") - (userRec.find("!")+1)); //obtain usernumber as tracked by the javascript
+			canvasWidth = userRec.substr(userRec.find("@")+1, userRec.find("#") - (userRec.find("@")+1)); //obtain canvas width as tracked by the javascript
+			canvasHeight = userRec.substr(userRec.find("#")+1, userRec.find("$") - (userRec.find("#")+1)); //obtain canvas height as tracked by the javascript
+			cout << "Canvas Width: " << canvasWidth << endl;
+			cout << "Canvas Height: " << canvasHeight << endl;
+			if (numberOfUsers < 2) //not enough users are connected
 			{
-				canvasWidthInt = stoi(canvasWidth, nullptr, 10);
-				canvasHeightInt = stoi(canvasHeight, nullptr, 10);
-				paddleHeight = canvasHeightInt/6;
-				xBall = canvasWidthInt/2;
-				yBall = canvasHeightInt/2;
-				dxBall = canvasWidthInt/100;
-				dyBall = canvasHeightInt/60;
-				xBallStr = to_string(xBall);
-				yBallStr = to_string(yBall);
-				gameState = GAME_STATE_INPLAY;
-				cout << "game state: " << gameState << endl;
+				numberOfUsers++;
+				uNumFifo_ServerToAjax.openwrite();
+				uNumFifo_ServerToAjax.send(to_string(numberOfUsers)); //change the assigned usernumber of the current user
+				uNumFifo_ServerToAjax.fifoclose();
+				if (numberOfUsers == 2) //set all of the parameters in preperation for game start
+				{
+					canvasWidthInt = stoi(canvasWidth, nullptr, 10);
+					canvasHeightInt = stoi(canvasHeight, nullptr, 10);
+					paddleHeight = canvasHeightInt/6;
+					paddleWidth = canvasWidthInt/50;
+					int paddleStartPosition = (canvasWidthInt/2) + (paddleHeight/2);
+					p1Paddle = to_string(paddleStartPosition);
+					p2Paddle = p1Paddle;
+					xBall = canvasWidthInt/2;
+					yBall = canvasHeightInt/2;
+					dxBall = canvasWidthInt/50;
+					dyBall = canvasHeightInt/(rand()%101 + 30);
+					xBallStr = to_string(xBall);
+					yBallStr = to_string(yBall);
+					gameState = GAME_STATE_INPLAY;
+				}
 			}
-		}		
-
+			cout << "Number of Users: " << numberOfUsers << endl;
+			cout << "Game State: " << gameState << endl;
+		}
+	
+		while (gameState == GAME_STATE_INPLAY)
+		{	
+			cout << "Start of loop" << endl;
+			paddleFifo_AjaxToServer.openread();
+			paddleRec = paddleFifo_AjaxToServer.recv(); //Expected recieve string: "!usernumber@paddleposition#
+			paddleFifo_AjaxToServer.fifoclose();
+			string userNo = paddleRec.substr(paddleRec.find("!") + 1, paddleRec.find("@") - (paddleRec.find("!")+1)); //obtain usernumber as tracked by the javascript
+			string paddlePos = paddleRec.substr(paddleRec.find("@") + 1, paddleRec.find("#") - (paddleRec.find("@")+1)); //obtain paddle position as tracked by the javascript
+			cout << userNo << endl;
+			cout << paddlePos << endl;
+		
+			if(userNo == "1")
+			{
+				p1Paddle = paddlePos;
+				paddleFifo_ServerToAjax.openwrite();
+				paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+				paddleFifo_ServerToAjax.fifoclose();
+				p1PaddleInt = stoi(p1Paddle, nullptr, 10);
+				cout << "User 1 Paddle: " << p1PaddleInt << " xBall: " << xBall << " yBall: " << yBall << endl;
+			}
+			else
+			{
+				p2Paddle = paddlePos;
+				paddleFifo_ServerToAjax.openwrite();
+				paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
+				paddleFifo_ServerToAjax.fifoclose();
+				p2PaddleInt = stoi(p2Paddle, nullptr, 10);
+				cout << "User 2 Paddle: " << p1PaddleInt << " xBall: " << xBall << " yBall: " << yBall << endl;
+			}
+			if ((yBall + dyBall) >= canvasHeightInt || (yBall + dyBall) <= 0) //Ball hits top or bottom of canvas
+			{
+				dyBall = -dyBall;
+			}
+			if ( (xBall + dxBall) >= (canvasWidthInt - paddleWidth)) //ball hits right side of canvas
+			{
+				if ((yBall >= p2PaddleInt) && (yBall <= (p2PaddleInt + paddleHeight))) //ball is hit
+				{
+					dxBall = -dxBall;
+				}
+				else //ball is not hit
+				{
+					gameState = GAME_STATE_POST;
+				}
+			}
+			if ( (xBall + dxBall) <= (paddleWidth)) //ball hits left side of canvas
+			{
+				if ((yBall >= p1PaddleInt) && (yBall <= (p1PaddleInt + paddleHeight))) //ball is hit
+				{
+					dxBall = -dxBall;
+				}
+				else //ball is not hit
+				{
+					gameState = GAME_STATE_POST;
+				}
+			}
+			xBall += dxBall; //change x position of ball
+			yBall += dyBall; //change y position of ball
+			xBallStr = to_string(xBall);
+			yBallStr = to_string(yBall);
+			cout << "End of loop" << endl;
+		}
+		while (gameState == GAME_STATE_POST)
+		{
+			cout << "Start of game state post" << endl;
+			paddleFifo_AjaxToServer.openread();
+			paddleRec = paddleFifo_AjaxToServer.recv(); //Expected recieve string: "!usernumber@paddleposition#
+			paddleFifo_AjaxToServer.fifoclose();
+			string send = "!250@300#300$";
+			paddleFifo_ServerToAjax.openwrite();
+			paddleFifo_ServerToAjax.send(send);
+			paddleFifo_ServerToAjax.fifoclose();
+			cout << send << endl;
+			cout << "End of game state post" << endl;
+		}
 	}
 	
-	while (gameState == GAME_STATE_INPLAY)
-	{	
-		cout << "in while(gameState == GAME_STATE_INPLAY) loop" << endl;
-		paddleFifo_AjaxToServer.openread();
-		cout << "test1" << endl;
-		paddleRec = paddleFifo_AjaxToServer.recv();
-		cout << "test2" << endl;
-		cout << paddleRec << endl;
-		cout << "test2.5" << endl;
-		string userNo = paddleRec.substr(paddleRec.find("!") + 1, paddleRec.find("@") - (paddleRec.find("!")+1));
-		cout << "test3" << endl;
-		string paddlePos = paddleRec.substr(paddleRec.find("@") + 1, paddleRec.find("#") - (paddleRec.find("@")+1));
-		cout << "test4" << endl;
-		cout << userNo << endl;
-		cout << "test5" << endl;
-		cout << paddlePos << endl;
-		cout << "test6" << endl;
-		
-		if(userNo == "1")
-		{
-			cout << "test7" << endl;
-			p1Paddle = paddlePos;
-			cout << "test8" << endl;
-			paddleFifo_ServerToAjax.openwrite();
-			cout << "test9" << endl;
-			paddleFifo_ServerToAjax.send("!" + p1Paddle + "@" + xBallStr + "#" +yBallStr + "$");
-			cout << "test10" << endl;
-			p1PaddleInt = stoi(p1Paddle, nullptr, 10);
-			cout << endl << "User 1: " << p1PaddleInt << "YBall: " << yBall << endl;
-			cout << "test11" << endl;
-			paddleFifo_AjaxToServer.fifoclose();
-    		paddleFifo_ServerToAjax.fifoclose();
-		}
-		else if(userNo == "2")
-		{
-			cout << "test12" << endl;
-			p2Paddle = paddlePos;
-			cout << "test13" << endl;
-			paddleFifo_ServerToAjax.openwrite();
-			cout << "test14" << endl;
-			paddleFifo_ServerToAjax.send("!" + p2Paddle + "@" + xBallStr + "#" +yBallStr + "$");
-			cout << "test15" << endl;
-			p2PaddleInt = stoi(p2Paddle, nullptr, 10);
-			cout << endl << "User 2: " << p2PaddleInt << "YBall: " << yBall << endl;
-			cout << "test16" << endl;
-			paddleFifo_AjaxToServer.fifoclose();
-    		paddleFifo_ServerToAjax.fifoclose();
-		}
-		cout << "test17" << endl;
-		if ((yBall + dyBall) >= canvasHeightInt || (yBall + dyBall) <= 0) 
-		{
-			cout << "test18" << endl;
-    		dyBall = -dyBall;
-    		cout << "test19" << endl;
-    	}
-    	else if ( (xBall + dxBall) >= (canvasWidthInt - canvasWidthInt/50))
-    	{
-    		cout << "test20" << endl;
-    		if ((yBall >= p2PaddleInt) && (yBall <= (p2PaddleInt + paddleHeight))) 
-    		{
-    			cout << "test21" << endl;
-    			dxBall = -dxBall;
-    			cout << "test22" << endl;
-    		}
-    		else 
-    		{
-    			cout << "test23" << endl;
-    			gameState = GAME_STATE_PRE;
-    			cout << "test24" << endl;
-    		}
-    	}
-    	else if ( (xBall + dxBall) <= (canvasWidthInt/50)) 
-    	{
-    		cout << "test25" << endl;
-    		if ((yBall >= p1PaddleInt) && (yBall <= (p1PaddleInt + paddleHeight))) 
-    		{
-    			cout << "test26" << endl;
-    			dxBall = -dxBall;
-    			cout << "test27" << endl;
-    		}
-    		else 
-    		{
-    			cout << "test28" << endl;
-    			gameState = GAME_STATE_PRE;
-    			cout << "test29" << endl;
-    		}
-    	}
-    	cout << "test30" << endl;
-    	xBall += dxBall;
-    	cout << "test31" << endl;
-    	yBall += dyBall;
-    	cout << "test32" << endl;
-    	xBallStr = to_string(xBall);
-    	cout << "test33" << endl;
-    	yBallStr = to_string(yBall);
-    	cout << "test34" << endl;
-    	
-
-    	
-    	
-		
-	}
 	return 0;
 }
