@@ -36,7 +36,7 @@ var padRec = "initialized padRec"; //string to hold the recieved paddle and ball
 var upPressed = false; //up key is not being pressed
 var downPressed = false; //down key is not being pressed
 var refreshInterval = 0; //used to hold the timer ID
-const CLOCK_MS = 500; //the millisecond value at which the game refreshes
+const CLOCK_MS = 150; //the millisecond value at which the game refreshes
 var safeguard = false; //boolean to track active cgi requests;
 
 /*Precondition: Page has not loaded.
@@ -72,7 +72,7 @@ function connectToServer()
 	}
 	safeguard = true;
 	
-	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
+	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&CANVAS_WIDTH=" + CANVAS_WIDTH + "&CANVAS_HEIGHT=" + CANVAS_HEIGHT;
 	XMLHttp.open("GET", sendStr, true);
 	
 	XMLHttp.onreadystatechange=function() //check for response from the cgi
@@ -106,7 +106,7 @@ function drawGame()
 		return;
 	}
 	safeguard = true;
-	var sendStr = "/cgi-bin/seavera_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle1=" + yPaddle1;
+	var sendStr = "/cgi-bin/gavinhannerc_pongAjax.cgi?" + "&userNumber=" + userNumber + "&yPaddle1=" + yPaddle1;
 	XMLHttp.open("GET", sendStr, true);
 	XMLHttp.onreadystatechange=function() //check for response from the cgi
 	{

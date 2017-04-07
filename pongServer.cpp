@@ -94,7 +94,7 @@ int main()
 					p2Paddle = p1Paddle;
 					xBall = canvasWidthInt/2;
 					yBall = canvasHeightInt/2;
-					dxBall = canvasWidthInt/50;
+					dxBall = canvasWidthInt/50; //changed from 50
 					dyBall = canvasHeightInt/(rand()%101 + 30);
 					xBallStr = to_string(xBall);
 					yBallStr = to_string(yBall);
