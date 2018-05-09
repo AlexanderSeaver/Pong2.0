@@ -1,7 +1,9 @@
-/*************************************************************/
-/* Authors: Alex Seaver and Coire Gavin-Hanner               */
-/* Date Created: 2-17-17					                 */
-/*************************************************************/
+/***************************************************************/
+/* Authors: Alex Seaver and Coire Gavin-Hanner                 */
+/* Date Created: 2-17-17					                   */
+/* Last Modified: 5-9-18                                       */
+/* Description: Remote two-player pong game with web interface */
+/***************************************************************/
 
 #include <sys/types.h>
 #include <sys/wait.h>
